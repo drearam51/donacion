@@ -1,0 +1,51 @@
+MIT License
+
+Copyright (c) 2026 WebAR Donación de Órganos
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Proyecto Educativo
+
+Este es un proyecto académico MVP (Minimum Viable Product) desarrollado con fines educativos para demostrar capacidades de WebAR (Web Augmented Reality) aplicadas a concientización sobre donación de órganos.
+
+## Tecnologías de Terceros
+
+Este proyecto utiliza las siguientes tecnologías open source:
+
+- **A-Frame** (MIT License) - https://aframe.io/
+- **AR.js** (MIT License) - https://ar-js-org.github.io/AR.js-Docs/
+- **Express** (MIT License) - https://expressjs.com/
+- **Mongoose** (MIT License) - https://mongoosejs.com/
+- **Node.js** (MIT License) - https://nodejs.org/
+
+## Disclaimer
+
+Este proyecto es de código abierto y se proporciona "tal cual" sin garantías de ningún tipo. No está destinado para uso en producción sin las medidas de seguridad, escalabilidad y testing apropiados.
+
+La información sobre donación de órganos incluida en el storytelling es de naturaleza general y educativa. Para información médica o legal oficial, consulta con autoridades sanitarias competentes.
+
+## Contribuciones
+
+Este es un proyecto académico MVP. Las contribuciones, issues y mejoras son bienvenidas bajo los términos de la licencia MIT.
+
+## Contacto
+
+Para preguntas sobre este proyecto, consulta la documentación incluida en los archivos .md del repositorio.

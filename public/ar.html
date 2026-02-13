@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Experiencia AR - Donación de Órganos</title>
+  
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  
+  <!-- AR.js - IMPORTANTE: usar versión compatible con iOS Safari -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Overlay container */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Status indicator */
+    #status {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+      pointer-events: auto;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    #status.searching {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Story overlay */
+    #storyOverlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+      border-radius: 20px;
+      padding: 24px;
+      pointer-events: auto;
+      transform: translateY(150%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+      max-width: 500px;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+    }
+
+    #storyOverlay.show {
+      transform: translateY(0);
+    }
+
+    #storyOverlay h2 {
+      color: #e74c3c;
+      font-size: 22px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    #storyOverlay p {
+      color: #2c3e50;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .btn-cta {
+      display: inline-block;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      margin-top: 8px;
+      margin-right: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn-cta:active {
+      transform: scale(0.95);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      box-shadow: 0 4px 15px rgba(149, 165, 166, 0.4);
+    }
+
+    /* Permission screen */
+    #permissionScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      pointer-events: auto;
+    }
+
+    #permissionScreen.hidden {
+      display: none;
+    }
+
+    .permission-content {
+      text-align: center;
+      color: white;
+      padding: 40px;
+      max-width: 400px;
+    }
+
+    .permission-content h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .permission-content p {
+      font-size: 16px;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    #startButton {
+      background: white;
+      color: #667eea;
+      padding: 16px 40px;
+      border-radius: 30px;
+      border: none;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    #startButton:active {
+      transform: scale(0.95);
+    }
+
+    /* Error screen */
+    #errorScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #2c3e50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      pointer-events: auto;
+      padding: 20px;
+    }
+
+    #errorScreen.show {
+      display: flex;
+    }
+
+    .error-content {
+      text-align: center;
+      color: white;
+      max-width: 400px;
+    }
+
+    .error-content h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .error-content p {
+      font-size: 16px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* Loading animation */
+    .loading-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid white;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* A-Frame scene */
+    a-scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Close button */
+    #closeButton {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      pointer-events: auto;
+      backdrop-filter: blur(10px);
+      z-index: 1001;
+    }
+  </style>
+</head>
+<body>
+  <!-- Permission Screen -->
+  <div id="permissionScreen">
+    <div class="permission-content">
+      <h1>📷 Activar Cámara</h1>
+      <p>Necesitamos acceso a tu cámara para mostrar la experiencia de realidad aumentada.</p>
+      <p><strong>Asegúrate de tener los marcadores impresos.</strong></p>
+      <button id="startButton">Iniciar Experiencia</button>
+    </div>
+  </div>
+
+  <!-- Error Screen -->
+  <div id="errorScreen">
+    <div class="error-content">
+      <h1>⚠️</h1>
+      <p id="errorMessage">No pudimos acceder a la cámara. Verifica los permisos en la configuración de tu navegador.</p>
+      <button class="btn-cta" onclick="location.href='/'">Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- AR Scene -->
+  <a-scene
+    id="arScene"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; precision: medium;"
+    style="display: none;">
+
+    <a-assets timeout="10000">
+      <!-- Los modelos 3D se cargarán aquí -->
+      <!-- Por ahora usaremos primitivas de A-Frame -->
+    </a-assets>
+
+    <!-- Marcador: Corazón -->
+    <a-marker id="marker-heart" type="pattern" url="/markers/heart.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity
+        id="heart-model"
+        geometry="primitive: sphere; radius: 0.3"
+        material="color: #e74c3c; metalness: 0.3; roughness: 0.7"
+        position="0 0.5 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
+        animation__scale="property: scale; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 1000; easing: easeInOutSine">
+      </a-entity>
+    </a-marker>
+
+    <!-- Marcador: Riñón -->
+    <a-marker id="marker-kidney" type="pattern" url="/markers/kidney.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity
+        geometry="primitive: box; width: 0.4; height: 0.6; depth: 0.3"
+        material="color: #8e44ad; metalness: 0.3; roughness: 0.7"
+        position="0 0.5 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-marker>
+
+    <!-- Marcador: Pulmón -->
+    <a-marker id="marker-lung" type="pattern" url="/markers/lung.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity
+        geometry="primitive: cylinder; radius: 0.25; height: 0.6"
+        material="color: #3498db; metalness: 0.3; roughness: 0.7"
+        position="0 0.5 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-marker>
+
+    <!-- Marcador: Ojo -->
+    <a-marker id="marker-eye" type="pattern" url="/markers/eye.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity
+        geometry="primitive: sphere; radius: 0.25"
+        material="color: #1abc9c; metalness: 0.3; roughness: 0.7"
+        position="0 0.5 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-marker>
+
+    <!-- Marcador: Hígado -->
+    <a-marker id="marker-liver" type="pattern" url="/markers/liver.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity
+        geometry="primitive: dodecahedron; radius: 0.3"
+        material="color: #d35400; metalness: 0.3; roughness: 0.7"
+        position="0 0.5 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Overlay UI -->
+  <div id="overlay">
+    <button id="closeButton" onclick="location.href='/'">✕</button>
+    <div id="status" class="searching">🔍 Buscando marcador...</div>
+    <div id="storyOverlay">
+      <h2 id="storyTitle">Título</h2>
+      <p id="storyText">Historia...</p>
+      <button class="btn-cta" id="ctaButton">Conocer más</button>
+      <button class="btn-cta btn-secondary" id="closeStory">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- AR Events Script -->
+  <script src="/js/ar-events.js"></script>
+</body>
+</html>

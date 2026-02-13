@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Experiencia de Realidad Aumentada para concientizar sobre donación de órganos">
+  <title>Donación de Órganos - WebAR</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>💚 Un Órgano, Una Vida</h1>
+      <p class="subtitle">Descubre cómo puedes salvar vidas a través de la realidad aumentada</p>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div class="card">
+          <h2>🫀 Experiencia Interactiva</h2>
+          <p>Usa tu cámara para descubrir historias reales sobre donación de órganos.</p>
+          <p><strong>Necesitarás:</strong></p>
+          <ul>
+            <li>✅ Smartphone con cámara</li>
+            <li>✅ Conexión HTTPS (Safari iOS / Chrome Android)</li>
+            <li>✅ Marcadores impresos (descarga abajo)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>📷 ¿Cómo funciona?</h2>
+          <ol>
+            <li>Descarga e imprime los marcadores</li>
+            <li>Haz clic en "Iniciar Experiencia AR"</li>
+            <li>Permite el acceso a la cámara</li>
+            <li>Enfoca un marcador y descubre la historia</li>
+          </ol>
+        </div>
+
+        <div class="cta-section">
+          <a href="/ar.html" class="btn-primary">📱 Iniciar Experiencia AR</a>
+        </div>
+
+        <div class="card markers-section">
+          <h2>🖨️ Descarga los Marcadores</h2>
+          <p>Necesitas imprimir estos 5 marcadores en papel (tamaño A4 recomendado):</p>
+          <div class="marker-list">
+            <a href="/markers/heart.patt" class="marker-link" download>🫀 Marcador Corazón</a>
+            <a href="/markers/kidney.patt" class="marker-link" download>🫘 Marcador Riñón</a>
+            <a href="/markers/lung.patt" class="marker-link" download>🫁 Marcador Pulmón</a>
+            <a href="/markers/eye.patt" class="marker-link" download>👁️ Marcador Ojo</a>
+            <a href="/markers/liver.patt" class="marker-link" download>🟤 Marcador Hígado</a>
+          </div>
+          <p class="note">💡 <strong>Tip:</strong> Imprime en papel blanco mate para mejor detección</p>
+        </div>
+      </section>
+
+      <section class="info">
+        <div class="card stats-card">
+          <h2>📊 Impacto Real</h2>
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-number">8</div>
+              <div class="stat-label">Órganos pueden salvar</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">50+</div>
+              <div class="stat-label">Tejidos pueden ayudar</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">1000s</div>
+              <div class="stat-label">Esperan un trasplante</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🤔 ¿Por qué AR?</h2>
+          <p>La realidad aumentada te permite <strong>visualizar</strong> y <strong>conectar emocionalmente</strong> con historias reales de donación de órganos de una manera única e inmersiva.</p>
+        </div>
+      </section>
+
+      <section class="register-section">
+        <div class="card">
+          <h2>✉️ Mantente Informado</h2>
+          <form id="registerForm" class="register-form">
+            <div class="form-group">
+              <label for="nombre">Nombre completo:</label>
+              <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre">
+            </div>
+            <div class="form-group">
+              <label for="email">Correo electrónico:</label>
+              <input type="email" id="email" name="email" required placeholder="tu@email.com">
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="consentimiento" name="consentimiento" required>
+              <label for="consentimiento">Acepto recibir información sobre donación de órganos</label>
+            </div>
+            <button type="submit" class="btn-primary">Registrarme</button>
+          </form>
+          <div id="formMessage" class="form-message"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>💚 Proyecto educativo - WebAR Donación de Órganos</p>
+      <p><a href="/admin">Admin Dashboard</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // Form submission
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        nombre: document.getElementById('nombre').value,
+        email: document.getElementById('email').value,
+        consentimiento: document.getElementById('consentimiento').checked
+      };
+
+      const messageDiv = document.getElementById('formMessage');
+      
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          messageDiv.className = 'form-message success';
+          messageDiv.textContent = '✅ ¡Registro exitoso! Gracias por tu interés.';
+          document.getElementById('registerForm').reset();
+        } else {
+          messageDiv.className = 'form-message error';
+          messageDiv.textContent = '❌ Error: ' + data.error;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        messageDiv.className = 'form-message error';
+        messageDiv.textContent = '❌ Error de conexión. Intenta nuevamente.';
+      }
+
+      // Limpiar mensaje después de 5 segundos
+      setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.className = 'form-message';
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
