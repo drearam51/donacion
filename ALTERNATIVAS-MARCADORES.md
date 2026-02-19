@@ -236,12 +236,12 @@ AR.js también soporta barcode markers que son más fáciles de generar.
 **Usar esta herramienta:**
 https://au.gmented.com/app/marker/marker.php
 
-O descargar directamente:
-- Barcode 0: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-0.png
-- Barcode 1: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-1.png
-- Barcode 2: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-2.png
-- Barcode 3: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-3.png
-- Barcode 4: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-4.png
+O descargar desde [artoolkit-barcode-markers-collection](https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection) (tipo 3x3):
+- Barcode 0: https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/0.png
+- Barcode 1: https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/1.png
+- Barcode 2: https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/2.png
+- Barcode 3: https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/3.png
+- Barcode 4: https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/4.png
 
 **Ventajas:**
 - ✅ Fácil de generar
@@ -323,11 +323,12 @@ Para facilitarte la vida, aquí están links directos:
 
 ### Barcode Markers (Listos para usar):
 ```bash
-curl -o barcode-0.png https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-0.png
-curl -o barcode-1.png https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-1.png
-curl -o barcode-2.png https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-2.png
-curl -o barcode-3.png https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-3.png
-curl -o barcode-4.png https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/barcode-4.png
+# Desde artoolkit-barcode-markers-collection (tipo 3x3)
+curl -L -o barcode-0.png https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/0.png
+curl -L -o barcode-1.png https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/1.png
+curl -L -o barcode-2.png https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/2.png
+curl -L -o barcode-3.png https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/3.png
+curl -L -o barcode-4.png https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection/raw/master/3x3/4.png
 ```
 
 ### Preset Markers:

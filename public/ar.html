@@ -294,64 +294,127 @@
     renderer="logarithmicDepthBuffer: true; precision: medium;"
     style="display: none;">
 
-    <a-assets timeout="10000">
-      <!-- Los modelos 3D se cargarán aquí -->
-      <!-- Por ahora usaremos primitivas de A-Frame -->
+    <!-- Luz: debe ser hija de la cámara para iluminar lo que el usuario ve -->
+    <a-entity light="type: ambient; color: #FFF; intensity: 1"></a-entity>
+
+    <a-assets timeout="60000">
+      <!-- Modelos 3D anatómicos - HuBMAP CCF (CC BY 4.0) - Si no cargan, descarga a /public/models/ -->
+      <a-asset-item id="heart-model" src="https://raw.githubusercontent.com/hubmapconsortium/ccf-releases/main/v1.2/models/VH_F_Heart.glb"></a-asset-item>
+      <a-asset-item id="kidney-model" src="https://raw.githubusercontent.com/hubmapconsortium/ccf-releases/main/v1.2/models/VH_F_Kidney_L.glb"></a-asset-item>
+      <a-asset-item id="lung-model" src="https://raw.githubusercontent.com/hubmapconsortium/ccf-releases/main/v1.2/models/VH_F_Lung.glb"></a-asset-item>
+      <a-asset-item id="eye-model" src="https://raw.githubusercontent.com/hubmapconsortium/ccf-releases/main/v1.2/models/VH_F_Eye_L.glb"></a-asset-item>
+      <a-asset-item id="liver-model" src="https://raw.githubusercontent.com/hubmapconsortium/ccf-releases/main/v1.2/models/VH_F_Liver.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Marcador: Corazón -->
-    <a-marker id="marker-heart" type="pattern" url="/markers/heart.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+    <!-- Marcador: Corazón (barcode 0) -->
+    <a-marker 
+      id="marker-heart" 
+      type="barcode" 
+      value="0"
+      smooth="true" 
+      smoothCount="5" 
+      smoothTolerance="0.01" 
+      smoothThreshold="2">
+
+      <!-- Luz -->
+      <a-entity 
+        light="type: point; intensity: 1.5; distance: 10" 
+        position="0 2 2">
+      </a-entity>
+
+      <!-- Contenedor escalado -->
+      <a-entity 
+        id="heart-container"
+        position="0 0 0"
+        scale="10 8 8">
+
+        <!-- Modelo -->
+         <a-entity
+          id="heart-model-entity"
+          gltf-model="#heart-model"
+          position="-0.6 0 0"
+          scale="1 1 1"
+          rotation="0 0 0"
+          animation__heartbeat="property: scale; from: 1 1 1; to: 1.15 1.15 1.15; dir: alternate; loop: true; dur: 600; easing: easeInOutSine">
+        </a-entity>
+        <!-- <a-entity
+          id="heart-model-entity"
+          gltf-model="#heart-model"
+          position="0 0 0"
+          scale="1 1 1"
+          rotation="0 0 0"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear"
+          animation__heartbeat="property: scale; from: 1 1 1; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 800; easing: easeInOutSine">
+        </a-entity> -->
+        <!-- <a-entity
+          id="heart-model-entity"
+          gltf-model="#heart-model"
+          position="0 -0.8 0"
+          scale="1 1 1"
+          rotation="-90 0 0"
+          animation__heartbeat="
+            property: scale; 
+            from: 1 1 1; 
+            to: 1.15 1.15 1.15; 
+            dir: alternate; 
+            loop: true; 
+            dur: 600; 
+            easing: easeInOutSine">
+        </a-entity> -->
+    </a-entity>
+  </a-marker>
+
+
+    <!-- Marcador: Riñón (barcode 1) -->
+    <a-marker id="marker-kidney" type="barcode" value="1" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity light="type: point; intensity: 1; distance: 5" position="0 0.5 0"></a-entity>
       <a-entity
-        id="heart-model"
-        geometry="primitive: sphere; radius: 0.3"
-        material="color: #e74c3c; metalness: 0.3; roughness: 0.7"
+        gltf-model="#kidney-model"
         position="0 0.5 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
-        animation__scale="property: scale; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 1000; easing: easeInOutSine">
+        scale="0.5 0.5 0.5"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear"
+        animation__float="property: position; from: 0 0.5 0; to: 0 0.55 0; dir: alternate; loop: true; dur: 2000; easing: easeInOutSine">
       </a-entity>
     </a-marker>
 
-    <!-- Marcador: Riñón -->
-    <a-marker id="marker-kidney" type="pattern" url="/markers/kidney.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+    <!-- Marcador: Pulmón (barcode 2) -->
+    <a-marker id="marker-lung" type="barcode" value="2" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity light="type: point; intensity: 1; distance: 5" position="0 0.5 0"></a-entity>
       <a-entity
-        geometry="primitive: box; width: 0.4; height: 0.6; depth: 0.3"
-        material="color: #8e44ad; metalness: 0.3; roughness: 0.7"
+        gltf-model="#lung-model"
         position="0 0.5 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        scale="0.5 0.5 0.5"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear"
+        animation__breathe="property: scale; from: 0.5 0.5 0.5; to: 0.58 0.58 0.58; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine">
       </a-entity>
     </a-marker>
 
-    <!-- Marcador: Pulmón -->
-    <a-marker id="marker-lung" type="pattern" url="/markers/lung.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+    <!-- Marcador: Ojo (barcode 3) -->
+    <a-marker id="marker-eye" type="barcode" value="3" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity light="type: point; intensity: 1; distance: 5" position="0 0.5 0"></a-entity>
       <a-entity
-        geometry="primitive: cylinder; radius: 0.25; height: 0.6"
-        material="color: #3498db; metalness: 0.3; roughness: 0.7"
+        gltf-model="#eye-model"
         position="0 0.5 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        scale="0.5 0.5 0.5"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
       </a-entity>
     </a-marker>
 
-    <!-- Marcador: Ojo -->
-    <a-marker id="marker-eye" type="pattern" url="/markers/eye.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+    <!-- Marcador: Hígado (barcode 4) -->
+    <a-marker id="marker-liver" type="barcode" value="4" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity light="type: point; intensity: 1; distance: 5" position="0 0.5 0"></a-entity>
       <a-entity
-        geometry="primitive: sphere; radius: 0.25"
-        material="color: #1abc9c; metalness: 0.3; roughness: 0.7"
+        gltf-model="#liver-model"
         position="0 0.5 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        scale="0.5 0.5 0.5"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 14000; easing: linear"
+        animation__float="property: position; from: 0 0.5 0; to: 0 0.52 0; dir: alternate; loop: true; dur: 3000; easing: easeInOutSine">
       </a-entity>
     </a-marker>
 
-    <!-- Marcador: Hígado -->
-    <a-marker id="marker-liver" type="pattern" url="/markers/liver.patt" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
-      <a-entity
-        geometry="primitive: dodecahedron; radius: 0.3"
-        material="color: #d35400; metalness: 0.3; roughness: 0.7"
-        position="0 0.5 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
-      </a-entity>
-    </a-marker>
-
-    <a-entity camera></a-entity>
+    <a-entity camera>
+      <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="0 1 1" target="0 0 0"></a-entity>
+    </a-entity>
   </a-scene>
 
   <!-- Overlay UI -->

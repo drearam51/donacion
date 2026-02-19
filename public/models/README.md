@@ -1,8 +1,8 @@
-# Carpeta para modelos 3D
-# Los modelos .glb deben ser optimizados (<2MB cada uno)
-# Puedes descargarlos de:
-# - Sketchfab: https://sketchfab.com/
-# - Clara.io: https://clara.io/
+# Carpeta para modelos 3D (opcional)
 
-# Por ahora el MVP usa primitivas de A-Frame
-# Para agregar modelos reales, lee el README.md
+Los modelos se cargan por defecto desde HuBMAP CCF (GitHub).
+
+Si quieres usar modelos locales (más rápido, sin depender de red):
+1. Descarga los .glb (ver MODELOS-3D.md)
+2. Guárdalos aquí: heart.glb, kidney.glb, lung.glb, eye.glb, liver.glb
+3. Actualiza las URLs en ar.html a /models/heart.glb etc.

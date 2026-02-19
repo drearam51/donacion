@@ -41,16 +41,14 @@ copy .env.example .env
 # Opción B: MongoDB local - mongodb://localhost:27017/donacion-organos
 ```
 
-#### 2. Generar Marcadores AR
+#### 2. Imprimir Marcadores AR (patrones barcode)
 ```bash
-# Los marcadores actuales son placeholders
-# Necesitas generar los reales:
+# El proyecto usa marcadores Barcode (patrones puros, más fiables que imágenes)
 
-# Lee esta guía:
-MARCADORES.md
+# Descarga e imprime las 5 imágenes desde:
+# public/markers/BARCODES-IMPRIMIR.md
 
-# O usa la opción rápida:
-ALTERNATIVAS-MARCADORES.md
+# O descarga directamente desde los links de ALTERNATIVAS-MARCADORES.md (Opción 5)
 ```
 
 #### 3. Usar HTTPS (para iOS Safari)
