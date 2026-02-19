@@ -323,9 +323,9 @@
       type="barcode" 
       value="0"
       smooth="true" 
-      smoothCount="5" 
-      smoothTolerance="0.01" 
-      smoothThreshold="2">
+      smoothCount="10" 
+      smoothTolerance="0.02" 
+      smoothThreshold="5">
 
       <!-- Luz -->
       <a-entity 
@@ -336,44 +336,26 @@
       <!-- Contenedor escalado -->
       <a-entity 
         id="heart-container"
-        position="0 0.4 0"
-        scale="11 11 11">
+        position="0 0.2 0"
+        scale="8 8 8">
 
-        <!-- Modelo -->
-         <a-entity
+        <a-entity
           id="heart-model-entity"
           gltf-model="#heart-model"
           position="0 0 0"
           scale="1 1 1"
           rotation="0 0 0"
-          animation__heartbeat="property: scale; from: 1 1 1; to: 1.12 1.12 1.12; dir: alternate; loop: true; dur: 650; easing: easeInOutSine">
-        </a-entity>
-        <!-- <a-entity
-          id="heart-model-entity"
-          gltf-model="#heart-model"
-          position="0 0 0"
-          scale="1 1 1"
-          rotation="0 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear"
-          animation__heartbeat="property: scale; from: 1 1 1; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 800; easing: easeInOutSine">
-        </a-entity> -->
-        <!-- <a-entity
-          id="heart-model-entity"
-          gltf-model="#heart-model"
-          position="0 -0.8 0"
-          scale="1 1 1"
-          rotation="-90 0 0"
           animation__heartbeat="
             property: scale; 
             from: 1 1 1; 
-            to: 1.15 1.15 1.15; 
+            to: 1.1 1.1 1.1; 
             dir: alternate; 
             loop: true; 
-            dur: 600; 
+            dur: 700; 
             easing: easeInOutSine">
-        </a-entity> -->
-    </a-entity>
-  </a-marker>
+        </a-entity>
+      </a-entity>
+    </a-marker>
 
 
     <!-- Marcador: Riñón (barcode 1) -->
