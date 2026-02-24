@@ -272,6 +272,20 @@ const historias = {
 //   "La persona que puede cambiar esta historia... ya la viste."
 // ];
 
+// Obtener parámetro de la URL
+const params = new URLSearchParams(window.location.search);
+const historiaId = params.get("id");
+
+// Validar que exista y que esté en el objeto historias
+let escenas;
+
+if (historiaId && historias[historiaId]) {
+  escenas = historias[historiaId].escenas;
+} else {
+  // fallback por si alguien entra sin parámetro
+  escenas = historias["historia_1"].escenas;
+}
+
 let index = 0;
 const scene = document.getElementById("scene");
 
