@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portadores de Vida</title>
+
+<style>
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+  text-align:center;
+}
+
+.scene{
+  position:absolute;
+  opacity:0;
+  transition:1.2s ease;
+  max-width:500px;
+  padding:20px;
+}
+
+.show{
+  opacity:1;
+}
+
+button{
+  padding:14px 22px;
+  border-radius:30px;
+  border:none;
+  margin:10px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.primary{
+  background:#ff4b2b;
+  color:white;
+}
+
+.secondary{
+  background:#ffffff33;
+  color:white;
+}
+
+.counter{
+  font-size:30px;
+  color:#ff4b2b;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="heartbeat" src="heartbeat.mp3" loop preload="auto"></audio>
+
+<div id="scene" class="scene"></div>
+
+<script>
+
+const audio = document.getElementById("heartbeat");
+audio.volume = 0.4;
+
+const escenas = [
+  "Antonio tiene un sueño...",
+  "Quiere ver a su hijo Emilio jugar en el mejor estadio del mundo.",
+  "Pero hoy... ese sueño depende de algo más.",
+  "En Colombia más de 3.000 personas esperan un trasplante.",
+  "Un solo donante puede salvar hasta 8 vidas.",
+  "La persona que puede cambiar esta historia... ya la viste."
+];
+
+let index = 0;
+const scene = document.getElementById("scene");
+
+// Pantalla inicial
+scene.innerHTML = `
+  <h2>Activa el sonido para vivir la experiencia completa</h2>
+  <button class="primary" onclick="iniciar()">Comenzar</button>
+`;
+scene.classList.add("show");
+
+function iniciar(){
+  audio.play();
+  scene.classList.remove("show");
+
+  setTimeout(()=>{
+    mostrarEscena();
+  },1000);
+}
+
+function mostrarEscena(){
+  if(index < escenas.length){
+    scene.innerHTML = `<h2>${escenas[index]}</h2>`;
+    scene.classList.add("show");
+
+    setTimeout(()=>{
+      scene.classList.remove("show");
+      index++;
+      setTimeout(mostrarEscena,1000);
+    },4000);
+
+  } else {
+    mostrarFinal();
+  }
+}
+
+function mostrarFinal(){
+  scene.innerHTML = `
+    <h2>8 vidas pueden cambiar hoy.</h2>
+    <div class="counter" id="contador">0</div>
+    <button class="primary">Quiero informarme</button>
+    <button class="secondary">Aún no</button>
+  `;
+  scene.classList.add("show");
+  animarContador();
+}
+
+function animarContador(){
+  let count = 0;
+  const target = 8;
+  const counter = document.getElementById("contador");
+
+  const interval = setInterval(()=>{
+    count++;
+    counter.textContent = count;
+    if(count >= target){
+      clearInterval(interval);
+    }
+  },200);
+}
+
+</script>
+
+</body>
+</html>
