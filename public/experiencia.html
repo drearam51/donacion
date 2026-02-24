@@ -50,33 +50,231 @@ button{
   color:white;
 }
 
+input{
+  padding:10px;
+  width:80%;
+  margin:5px;
+  border-radius:8px;
+  border:none;
+}
+
 .counter{
   font-size:30px;
   color:#ff4b2b;
   margin-top:20px;
 }
+
+#fadeOverlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 1s ease;
+  z-index:999;
+}
+
+#fadeOverlay.active{
+  opacity:1;
+}
 </style>
 </head>
-
+<div id="fadeOverlay"></div>
 <body>
 
 <audio id="heartbeat" src="heartbeat.mp3" loop preload="auto"></audio>
-
 <div id="scene" class="scene"></div>
 
 <script>
 
+const historiaID = new URLSearchParams(window.location.search).get("id") || "emilio";
+
 const audio = document.getElementById("heartbeat");
 audio.volume = 0.4;
 
-const escenas = [
-  "Antonio tiene un sueño...",
-  "Quiere ver a su hijo Emilio jugar en el mejor estadio del mundo.",
-  "Pero hoy... ese sueño depende de algo más.",
-  "En Colombia más de 3.000 personas esperan un trasplante.",
-  "Un solo donante puede salvar hasta 8 vidas.",
-  "La persona que puede cambiar esta historia... ya la viste."
-];
+const historias = {
+
+  historia_1: {
+    escenas: [
+      "Camilo tiene un sueño...",
+      "Quiere viajar con Isabella para celebrar sus 15 años.",
+      "Regalarle una experiencia que recuerde toda la vida.",
+      "Porque algunos cumpleaños no se repiten.",
+      "Un donante puede permitir que más historias continúen.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_2: {
+    escenas: [
+      "Jorge tiene un sueño...",
+      "Quiere recorrer el mundo junto a Martha.",
+      "Descubrir nuevos lugares tomados de la mano.",
+      "Porque el tiempo compartido es el verdadero lujo.",
+      "Un donante puede devolver tiempo.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_3: {
+    escenas: [
+      "Camilo tiene un sueño...",
+      "Quiere que Isabella celebre sus 15 frente al mar.",
+      "Que el viento y las olas acompañen su alegría.",
+      "Que ese momento quede grabado para siempre.",
+      "Un donante puede permitir que más celebraciones ocurran.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_4: {
+    escenas: [
+      "Andrea tiene un sueño...",
+      "Quiere ver a Tomás jugar en un estadio profesional.",
+      "Escuchar su nombre en las gradas.",
+      "Verlo cumplir aquello por lo que tanto ha trabajado.",
+      "Una segunda oportunidad puede cambiar un destino.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_5: {
+    escenas: [
+      "Ange tiene un sueño...",
+      "Quiere ver a Majo convertirse en arquitecta.",
+      "Verla diseñar espacios donde otros construyan recuerdos.",
+      "Porque cuando un hijo cumple su sueño, también lo cumple su madre.",
+      "Un donante puede permitir que más sueños se construyan.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_6: {
+    escenas: [
+      "Oscar tiene un sueño...",
+      "Quiere que Joaco sea feliz.",
+      "Que tenga salud.",
+      "Que logre todo lo que se proponga.",
+      "Un donante puede cambiar el futuro de una familia.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_7: {
+    escenas: [
+      "María tiene un sueño...",
+      "Quiere atravesar Latinoamérica en carro junto a John.",
+      "Detenerse donde el corazón lo indique.",
+      "Vivir el viaje sin prisas.",
+      "Un donante puede permitir que más caminos continúen.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_8: {
+    escenas: [
+      "Yenifer tiene un sueño...",
+      "Quiere que Blanca tenga su casa propia.",
+      "Un lugar seguro.",
+      "Un lugar donde empezar de nuevo.",
+      "Un donante puede cambiar el destino de una familia.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_9: {
+    escenas: [
+      "Andrea tiene un sueño...",
+      "Quiere ver a Tomás jugar fútbol profesional.",
+      "Verlo en un gran estadio.",
+      "Sentir orgullo desde la tribuna.",
+      "Una oportunidad puede cambiar una vida.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_10: {
+    escenas: [
+      "Laura tiene un sueño...",
+      "Quiere que sus padres dejen de preocuparse por dinero.",
+      "Que puedan descansar tranquilos.",
+      "Que vivan sin miedo al mañana.",
+      "Un donante puede devolver tranquilidad.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_11: {
+    escenas: [
+      "Camilo tiene un sueño...",
+      "Quiere que Valentina sea una escritora reconocida.",
+      "Publicar novelas.",
+      "Ser leída por miles.",
+      "Un donante puede permitir que más historias se escriban.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_12: {
+    escenas: [
+      "Alejandra tiene un sueño...",
+      "Quiere ver a Coldplay junto a Miguel.",
+      "Cantar juntos.",
+      "Vivir un momento inolvidable.",
+      "Un donante puede devolver tiempo para cumplir sueños.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_13: {
+    escenas: [
+      "Jhon tiene un sueño...",
+      "Quiere ver a Sofía conocer la aurora boreal.",
+      "Compartir ese momento con su hija.",
+      "Vivir algo único en familia.",
+      "Un donante puede permitir que más familias sigan soñando.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_14: {
+    escenas: [
+      "Jorge tiene un sueño...",
+      "Quiere seguir viajando junto a Martha.",
+      "Ver juntos los frutos maduros del tiempo.",
+      "Compartir cada etapa de la vida.",
+      "Un donante puede devolver años compartidos.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  },
+
+  historia_15: {
+    escenas: [
+      "Eliud tiene un sueño...",
+      "Quiere viajar a Israel junto a Lilia.",
+      "Cumplir una promesa pendiente.",
+      "Vivir una experiencia espiritual juntos.",
+      "Un donante puede permitir que más promesas se cumplan.",
+      "La persona que puede cambiar esta historia... ya la viste."
+    ]
+  }
+};
+
+// const escenas = [
+//   "Antonio tiene un sueño...",
+//   "Quiere ver a su hijo Emilio jugar en el mejor estadio del mundo.",
+//   "Pero hoy... ese sueño depende de algo más.",
+//   "En Colombia más de 3.000 personas esperan un trasplante.",
+//   "Un solo donante puede salvar hasta 8 vidas.",
+//   "La persona que puede cambiar esta historia... ya la viste."
+// ];
+
+const keys = Object.keys(historias);
+const randomKey = keys[Math.floor(Math.random() * keys.length)];
+const escenas = historias[randomKey].escenas;
 
 let index = 0;
 const scene = document.getElementById("scene");
@@ -92,9 +290,7 @@ function iniciar(){
   audio.play();
   scene.classList.remove("show");
 
-  setTimeout(()=>{
-    mostrarEscena();
-  },1000);
+  setTimeout(()=>mostrarEscena(),1000);
 }
 
 function mostrarEscena(){
@@ -117,11 +313,125 @@ function mostrarFinal(){
   scene.innerHTML = `
     <h2>8 vidas pueden cambiar hoy.</h2>
     <div class="counter" id="contador">0</div>
-    <button class="primary">Quiero informarme</button>
-    <button class="secondary">Aún no</button>
+    <button class="primary" onclick="irARegistro()">Quiero informarme</button>
+    <button class="secondary" onclick="location.reload()">Aún no</button>
   `;
   scene.classList.add("show");
   animarContador();
+}
+
+function mostrarInformacion(){
+  scene.innerHTML = `
+    <h2>Mito:</h2>
+    <p><strong>"Si soy donante, no harán todo por salvarme."</strong></p>
+    <p style="opacity:0.8;">
+      Realidad: Los médicos siempre priorizan salvar tu vida.
+    </p>
+    <button class="primary" onclick="mostrarFormulario()">Entiendo</button>
+  `;
+}
+
+function irARegistro() {
+
+  const overlay = document.getElementById("fadeOverlay");
+
+  let vol = audio.volume;
+
+  const fadeAudio = setInterval(() => {
+    if (vol > 0.02) {
+      vol -= 0.02;
+      audio.volume = vol;
+    } else {
+      clearInterval(fadeAudio);
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, 100);
+
+  // Activar fade visual
+  overlay.classList.add("active");
+
+  // Redirigir después de animación
+  setTimeout(() => {
+    window.location.href = "registro.html";
+  }, 1200);
+}
+
+function mostrarFormulario(){
+  scene.innerHTML = `
+    <h2>Déjanos tus datos</h2>
+
+    <section id="registro-section" class="scene hidden">
+
+      <div class="form-container">
+        <h2>Da el siguiente paso</h2>
+        <p>Regístrate para recibir información sobre cómo convertirte en donante.</p>
+
+        <form id="registroForm">
+
+          <input 
+            type="text" 
+            id="nombre" 
+            placeholder="Nombre completo"
+            required
+          />
+
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="Correo electrónico"
+            required
+          />
+
+          <label class="checkbox-container">
+            <input type="checkbox" id="consentimiento" required />
+            Acepto la política de tratamiento de datos personales
+          </label>
+
+          <button type="submit" class="btn-primary">
+            Registrarme
+          </button>
+
+        </form>
+
+        <div id="mensaje"></div>
+
+      </div>
+
+    </section>
+  `;
+
+  document.getElementById("formRegistro")
+    .addEventListener("submit", enviarFormulario);
+}
+
+async function enviarFormulario(e){
+  e.preventDefault();
+
+  const data = {
+    nombre: document.getElementById("nombre").value,
+    ciudad: document.getElementById("ciudad").value,
+    edad: document.getElementById("edad").value,
+    historiaID: historiaID,
+    aceptoPolitica: document.getElementById("politica").checked
+  };
+
+  const response = await fetch("/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if(response.ok){
+    scene.innerHTML = `
+      <h2>Gracias por dar el siguiente paso.</h2>
+      <p>Tu interés puede cambiar historias.</p>
+    `;
+  } else {
+    alert("Error guardando datos");
+  }
 }
 
 function animarContador(){
@@ -137,6 +447,51 @@ function animarContador(){
     }
   },200);
 }
+
+const form = document.getElementById("registroForm");
+const mensaje = document.getElementById("mensaje");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const nombre = document.getElementById("nombre").value;
+  const email = document.getElementById("email").value;
+  const consentimiento = document.getElementById("consentimiento").checked;
+
+  try {
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nombre,
+        email,
+        consentimiento
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      mensaje.innerHTML = `
+        <p class="success">
+          Gracias por registrarte. Tu decisión puede cambiar vidas.
+        </p>
+      `;
+      form.reset();
+    } else {
+      mensaje.innerHTML = `
+        <p class="error">${data.error}</p>
+      `;
+    }
+
+  } catch (error) {
+    mensaje.innerHTML = `
+      <p class="error">Error de conexión con el servidor.</p>
+    `;
+  }
+});
 
 </script>
 

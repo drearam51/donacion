@@ -354,3 +354,48 @@ a:focus {
   outline: 2px solid #e74c3c;
   outline-offset: 2px;
 }
+
+
+.form-container {
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.checkbox-container {
+  display: block;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: #c62828;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #b71c1c;
+}
+
+.success {
+  color: green;
+  margin-top: 15px;
+}
+
+.error {
+  color: red;
+  margin-top: 15px;
+}

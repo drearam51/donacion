@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro - Donación</title>
+
+<style>
+body{
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  width:90%;
+  max-width:400px;
+  text-align:center;
+}
+
+h2{
+  margin-bottom:10px;
+}
+
+p{
+  font-size:14px;
+  opacity:0.8;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  background:#c62828;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+button:hover{
+  background:#b71c1c;
+}
+
+.checkbox{
+  font-size:12px;
+  margin:10px 0;
+  text-align:left;
+}
+
+.success{
+  color:#4CAF50;
+  margin-top:15px;
+}
+
+.error{
+  color:#ff5252;
+  margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Da el siguiente paso</h2>
+  <p>Regístrate para recibir información sobre cómo convertirte en donante.</p>
+
+  <form id="registroForm">
+
+    <input 
+      type="text" 
+      id="nombre" 
+      placeholder="Nombre completo"
+      required
+    />
+
+    <input 
+      type="email" 
+      id="email" 
+      placeholder="Correo electrónico"
+      required
+    />
+
+    <div class="checkbox">
+      <input type="checkbox" id="consentimiento" required />
+      Acepto la política de tratamiento de datos personales
+    </div>
+
+    <button type="submit">Registrarme</button>
+
+  </form>
+
+  <div id="mensaje"></div>
+
+</div>
+
+<script>
+const form = document.getElementById("registroForm");
+const mensaje = document.getElementById("mensaje");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const nombre = document.getElementById("nombre").value;
+  const email = document.getElementById("email").value;
+  const consentimiento = document.getElementById("consentimiento").checked;
+
+  try {
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nombre,
+        email,
+        consentimiento
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      mensaje.innerHTML = `
+        <p class="success">
+          Gracias por registrarte. Pronto recibirás más información.
+        </p>
+      `;
+      form.reset();
+    } else {
+      mensaje.innerHTML = `
+        <p class="error">${data.error}</p>
+      `;
+    }
+
+  } catch (error) {
+    mensaje.innerHTML = `
+      <p class="error">Error de conexión con el servidor.</p>
+    `;
+  }
+});
+</script>
+
+</body>
+</html>
