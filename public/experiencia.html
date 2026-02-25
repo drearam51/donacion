@@ -323,8 +323,21 @@ function mostrarFinal(){
   scene.innerHTML = `
     <h2>8 vidas pueden cambiar hoy.</h2>
     <div class="counter" id="contador">0</div>
-    <button class="primary" onclick="irARegistro()">Quiero informarme</button>
-    <button class="secondary" onclick="location.reload()">Aún no</button>
+    <div id="decisionContainer" class="decision-container">
+      <h2>¿Qué decides hoy?</h2>
+
+      <button class="primary" onclick="guardarDecision('registrarme')">
+        💚 Quiero registrarme como donante
+      </button>
+
+      <button class="secondary" onclick="guardarDecision('familia')">
+        🤍 Quiero hablarlo con mi familia
+      </button>
+
+      <button class="secondary" onclick="guardarDecision('tiempo')">
+        ⏳ Necesito más tiempo para decidir
+      </button>
+    </div>
   `;
   scene.classList.add("show");
   animarContador();
@@ -502,6 +515,57 @@ form.addEventListener("submit", async (e) => {
     `;
   }
 });
+
+async function guardarDecision(tipoDecision) {
+
+  const params = new URLSearchParams(window.location.search);
+  const historiaId = params.get("id");
+
+  const payload = {
+    historia_id: historiaId,
+    decision: tipoDecision,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    await fetch('/api/decision', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const container = document.getElementById("decisionContainer");
+
+    if (tipoDecision === "registrarme") {
+
+      container.innerHTML = `
+        <h3>Gracias por dar un paso que puede salvar vidas.</h3>
+        <p>Te llevaremos al registro...</p>
+      `;
+
+      setTimeout(() => {
+        window.location.href = "registro.html";
+      }, 1500);
+
+    } else if (tipoDecision === "familia") {
+
+      container.innerHTML = `
+        <h3>Hablarlo es un acto de responsabilidad.</h3>
+        <p>Las decisiones importantes se toman en familia.</p>
+      `;
+
+    } else {
+
+      container.innerHTML = `
+        <h3>Reflexionar también es un paso.</h3>
+        <p>Cuando estés listo, la decisión puede salvar vidas.</p>
+      `;
+    }
+
+  } catch (error) {
+    console.error("Error guardando decisión:", error);
+  }
+}
 
 </script>
 

@@ -177,6 +177,33 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+app.post('/api/decision', async (req, res) => {
+  try {
+    const { historia_id, decision, timestamp } = req.body;
+    const userAgent = req.headers['user-agent'];
+
+    if (!historia_id || !decision) {
+      return res.status(400).json({ success: false });
+    }
+
+    const interaction = new Interaction({
+      historia_id,
+      decision,
+      timestamp,
+      userAgent,
+      tipo: "decision"
+    });
+
+    await interaction.save();
+
+    res.json({ success: true });
+
+  } catch (error) {
+    console.error("Error guardando decisión:", error);
+    res.status(500).json({ success: false });
+  }
+});
+
 // Admin dashboard
 app.get('/admin', async (req, res) => {
   try {
