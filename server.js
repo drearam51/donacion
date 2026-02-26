@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/donacion-organos';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
@@ -252,6 +252,33 @@ app.get('/admin', async (req, res) => {
     `);
   } catch (error) {
     res.status(500).send('Error cargando estadísticas');
+  }
+});
+
+app.post('/api/decision', async (req, res) => {
+  try {
+    const { historia_id, decision, timestamp } = req.body;
+    const userAgent = req.headers['user-agent'];
+
+    if (!historia_id || !decision) {
+      return res.status(400).json({ success: false });
+    }
+
+    const interaction = new Interaction({
+      historia_id,
+      decision,
+      timestamp,
+      userAgent,
+      tipo: "decision"
+    });
+
+    await interaction.save();
+
+    res.json({ success: true });
+
+  } catch (error) {
+    console.error("Error guardando decisión:", error);
+    res.status(500).json({ success: false });
   }
 });
 
