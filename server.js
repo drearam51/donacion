@@ -26,18 +26,41 @@ mongoose.connect(MONGODB_URI, {
 
 // Schemas
 const interactionSchema = new mongoose.Schema({
+
+  // Tipo de interacción
+  tipo: {
+    type: String,
+    enum: ['ar_scan', 'decision', 'registro'],
+    required: true
+  },
+
+  // Para AR (escaneo de órgano)
   organ: {
     type: String,
-    required: true,
     enum: ['heart', 'kidney', 'lung', 'eye', 'liver']
   },
+
+  // Para historias
+  historia_id: {
+    type: String
+  },
+
+  // Para decisiones
+  decision: {
+    type: String,
+    enum: ['registrarme', 'familia', 'tiempo']
+  },
+
+  // Datos técnicos
+  device: String,
+  userAgent: String,
+  sessionId: String,
+
   timestamp: {
     type: Date,
     default: Date.now
-  },
-  device: String,
-  userAgent: String,
-  sessionId: String
+  }
+
 });
 
 const registrationSchema = new mongoose.Schema({
