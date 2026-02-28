@@ -277,6 +277,41 @@
   </style>
 </head>
 <body>
+  <div id="introFlow">
+
+    <!-- Paso 1 -->
+    <div class="intro-step active" id="step1">
+      <h1>💭 Hay una conversación pendiente</h1>
+      <p>
+        Tal vez aún no lo has dicho.<br>
+        Tal vez aún no lo has decidido.<br><br>
+        Pero alguien… está esperando una oportunidad.
+      </p>
+      <button onclick="nextStep(2)">Continuar</button>
+    </div>
+  
+    <!-- Paso 2 -->
+    <div class="intro-step" id="step2">
+      <h1>🤍 “En mi familia no hablamos de eso.”</h1>
+      <p id="rotatingText"></p>
+      <p style="margin-top:20px;font-weight:600;">
+        Informarse no es decidir.<br>
+        Es entender.
+      </p>
+      <button onclick="nextStep(3)">Quiero entender</button>
+    </div>
+  
+    <!-- Paso 3 -->
+    <div class="intro-step" id="step3">
+      <h1>💚 Imagina este momento</h1>
+      <p>
+        Esta noche, miras a tu familia y dices:<br><br>
+        “He decidido salvar vidas.”
+      </p>
+      <button onclick="startCameraFlow()">Ver cómo</button>
+    </div>
+  
+  </div>
   <!-- Permission Screen -->
   <div id="permissionScreen">
     <div class="permission-content">

@@ -2,47 +2,253 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Donación - MindAR</title>
+  <title>Explora el cuerpo humano</title>
 
-  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
-  <!-- MindAR -->
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.4/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    body { margin: 0; overflow: hidden; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sanss-serif;
+    }
+
+    a-scene {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    #introFlow, #permissionScreen, #arMessage {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #introFlow {
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: white;
+      flex-direction: column;
+    }
+
+    .intro-step { display: none; max-width: 500px; }
+    .intro-step.active { display: block; }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      border: none;
+      background: #ff4b2b;
+      color: white;
+      font-size: 16px;
+    }
+
+    #permissionScreen {
+      background: black;
+      color: white;
+      display: none;
+      flex-direction: column;
+    }
+
+    #arMessage {
+      display: none;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      flex-direction: column;
+      pointer-events: none;
+    }
+
+    #arMessageContent {
+      pointer-events: auto;
+      max-width: 400px;
+    }
+
+    a-scene {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
-  <a-scene 
-    mindar-image="imageTargetSrc: targets.mind;"
-    color-space="sRGB" 
-    renderer="colorManagement: true, physicallyCorrectLights"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
 
-    <a-assets>
-      <a-asset-item id="heartModel" src="heart.glb"></a-asset-item>
-    </a-assets>
+<!-- INTRO -->
+<div id="introFlow">
 
-    <!-- Cámara -->
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <div class="intro-step active" id="step1">
+    <h1>💭 Hay una conversación pendiente</h1>
+    <p>Tal vez aún no lo has dicho.<br>Pero alguien está esperando una oportunidad.</p>
+    <button onclick="nextStep(2)">Continuar</button>
+  </div>
 
-    <!-- Target 0 (la primera imagen del .mind) -->
-    <a-entity mindar-image-target="targetIndex: 0">
-      
-      <a-entity
-        gltf-model="#heartModel"
-        position="0 0 0.1"
-        scale="0.3 0.3 0.3"
-        rotation="0 0 0">
-      </a-entity>
+  <div class="intro-step" id="step2">
+    <h1>🤍 “En mi familia no hablamos de eso.”</h1>
+    <p id="rotatingText"></p>
+    <button onclick="nextStep(3)">Quiero entender</button>
+  </div>
 
+  <div class="intro-step" id="step3">
+    <h1>💚 Imagina este momento</h1>
+    <p>Esta noche miras a tu familia y dices:<br><br>“He decidido salvar vidas.”</p>
+    <button onclick="startPermission()">Ver cómo</button>
+  </div>
+
+</div>
+
+<!-- PERMISSION -->
+<div id="permissionScreen">
+  <h2>Activar cámara</h2>
+  <button onclick="startAR()">Activar</button>
+</div>
+
+<!-- MENSAJE -->
+<div id="arMessage">
+  <div id="arMessageContent"></div>
+</div>
+
+<!-- AR -->
+<a-scene
+  mindar-image="imageTargetSrc: targets.mind;"
+  color-space="sRGB"
+  renderer="colorManagement: true, physicallyCorrectLights"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  id="scene"
+>
+
+  <a-assets>
+    <a-asset-item id="heartModel" src="models/heart.glb"></a-asset-item>
+    <a-asset-item id="lungModel" src="models/lung.glb"></a-asset-item>
+    <a-asset-item id="eyeModel" src="models/eye.glb"></a-asset-item>
+    <a-asset-item id="liverModel" src="models/liver.glb"></a-asset-item>
+    <a-asset-item id="kidneyModel" src="models/kidney.glb"></a-asset-item>
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <!-- CORAZON -->
+  <a-entity mindar-image-target="targetIndex: 4">
+    <a-gltf-model 
+      src="#heartModel"
+      position="0 0 0"
+      rotation="0 0 0"
+      scale="0.6 0.6 0.6">
+    </a-gltf-model>
+  </a-entity>
+  <!-- PULMÓN -->
+  <a-entity mindar-image-target="targetIndex: 2">
+    <a-entity scale="2.5 2.5 2.5">
+      <a-gltf-model src="#lungModel"></a-gltf-model>
     </a-entity>
+  </a-entity>
+  <!-- OJO -->
+  <a-entity mindar-image-target="targetIndex: 3">
+    <a-gltf-model 
+      src="#eyeModel"
+      position="0 0 0"
+      rotation="0 0 0"
+      scale="0.6 0.6 0.6">
+    </a-gltf-model>
+  </a-entity>
+  <!-- HIGADO -->
+  <a-entity mindar-image-target="targetIndex: 0">
+    <a-entity scale="2.8 2.8 2.8">
+      <a-gltf-model src="#liverModel"></a-gltf-model>
+    </a-entity>
+  </a-entity>
+  <!-- RIÑON -->
+  <a-entity mindar-image-target="targetIndex: 1">
+    <a-entity scale="1.5 1.5 1.5">
+      <a-gltf-model src="#kidneyModel"></a-gltf-model>
+    </a-entity>
+  </a-entity>
 
-  </a-scene>
+</a-scene>
+
+<script>
+
+const prejuicios = [
+  "“Me da miedo.”",
+  "“Eso trae mala suerte.”",
+  "“Prefiero no pensarlo.”"
+];
+
+let i = 0;
+setInterval(() => {
+  document.getElementById("rotatingText").innerText = prejuicios[i];
+  i = (i+1)%prejuicios.length;
+}, 2000);
+
+function nextStep(n){
+  document.querySelectorAll(".intro-step").forEach(s => s.classList.remove("active"));
+  document.getElementById("step"+n).classList.add("active");
+}
+
+function startPermission(){
+  document.getElementById("introFlow").style.display = "none";
+  document.getElementById("permissionScreen").style.display = "flex";
+}
+
+// function startAR(){
+//   document.getElementById("permissionScreen").style.display = "none";
+
+//   const scene = document.querySelector("a-scene");
+//   scene.style.display = "block";
+
+//   scene.addEventListener("loaded", () => {
+//     const mindarComponent = scene.components["mindar-image"];
+//     mindarComponent.start();
+//   });
+// }
+
+function startAR(){
+  document.getElementById("permissionScreen").style.display = "none";
+  const scene = document.querySelector("a-scene");
+  scene.style.display = "block";
+}
+
+const mensajes = {
+  0: { titulo: "Puede volver a latir", texto: "Y cuando vuelve a latir, alguien vuelve a abrazar." },
+  1: { titulo: "Puede volver a respirar", texto: "Y cuando alguien respira, una familia deja de contener el aire." },
+  2: { titulo: "Puede volver a ver", texto: "Y cuando alguien vuelve a ver, el mundo vuelve a empezar." },
+  3: { titulo: "Puede volver a empezar", texto: "Cuando el hígado funciona, la vida continúa." },
+  4: { titulo: "Puede devolver independencia", texto: "Cuando alguien deja la diálisis, recupera su tiempo." }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[mindar-image-target]").forEach((target, index) => {
+    target.addEventListener("targetFound", () => {
+      const data = mensajes[index];
+      const box = document.getElementById("arMessageContent");
+      box.innerHTML = `
+        <h2>${data.titulo}</h2>
+        <p>${data.texto}</p>
+        <button onclick="window.location.href='experiencia.html'">
+          Conoce una historia real
+        </button>
+      `;
+      document.getElementById("arMessage").style.display = "flex";
+    });
+
+    target.addEventListener("targetLost", () => {
+      document.getElementById("arMessage").style.display = "none";
+    });
+  });
+});
+
+</script>
+
 </body>
 </html>
