@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8" />
   <title>Explora el cuerpo humano</title>
@@ -8,13 +9,18 @@
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
       font-family: Arial, sanss-serif;
+    }
+
+    canvas {
+      background: transparent !important
     }
 
     a-scene {
@@ -24,8 +30,10 @@
       width: 100% !important;
       height: 100% !important;
     }
-    
-    #introFlow, #permissionScreen, #arMessage {
+
+    #introFlow,
+    #permissionScreen,
+    #arMessage {
       position: fixed;
       width: 100%;
       height: 100%;
@@ -43,8 +51,14 @@
       flex-direction: column;
     }
 
-    .intro-step { display: none; max-width: 500px; }
-    .intro-step.active { display: block; }
+    .intro-step {
+      display: none;
+      max-width: 500px;
+    }
+
+    .intro-step.active {
+      display: block;
+    }
 
     button {
       margin-top: 20px;
@@ -65,7 +79,7 @@
 
     #arMessage {
       display: none;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.2);
       color: white;
       flex-direction: column;
       pointer-events: none;
@@ -79,176 +93,376 @@
     a-scene {
       display: none;
     }
+
+    #storyOverlay {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.85));
+
+      border-radius: 20px;
+      padding: 24px;
+
+      transform: translateY(150%);
+      transition: transform .4s cubic-bezier(.68, -.55, .265, 1.55);
+
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .3);
+      backdrop-filter: blur(20px);
+
+      max-width: 500px;
+      margin: auto;
+
+      z-index: 1000;
+    }
+
+    #storyOverlay.show {
+      transform: translateY(0);
+    }
+
+    #storyOverlay h2 {
+      color: #e74c3c;
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    #storyOverlay p {
+      color: #2c3e50;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .btn-cta {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 30px;
+      border: none;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    }
   </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
-<div id="introFlow">
+  <!-- INTRO -->
+  <div id="introFlow">
 
-  <div class="intro-step active" id="step1">
-    <h1>💭 Hay una conversación pendiente</h1>
-    <p>Tal vez aún no lo has dicho.<br>Pero alguien está esperando una oportunidad.</p>
-    <button onclick="nextStep(2)">Continuar</button>
+    <div class="intro-step active" id="step1">
+      <h1>💭 Hay una conversación pendiente</h1>
+      <p>Tal vez aún no lo has dicho.<br>Pero alguien está esperando una oportunidad.</p>
+      <button onclick="nextStep(2)">Continuar</button>
+    </div>
+
+    <div class="intro-step" id="step2">
+      <h1>🤍 “En mi familia no hablamos de eso.”</h1>
+      <p id="rotatingText"></p>
+      <button onclick="nextStep(3)">Quiero entender</button>
+    </div>
+
+    <div class="intro-step" id="step3">
+      <h1>💚 Imagina este momento</h1>
+      <p>Esta noche miras a tu familia y dices:<br><br>“He decidido salvar vidas.”</p>
+      <button onclick="startPermission()">Ver cómo</button>
+    </div>
+
   </div>
 
-  <div class="intro-step" id="step2">
-    <h1>🤍 “En mi familia no hablamos de eso.”</h1>
-    <p id="rotatingText"></p>
-    <button onclick="nextStep(3)">Quiero entender</button>
+  <!-- PERMISSION -->
+  <div id="permissionScreen">
+    <h2>Activar cámara</h2>
+    <button onclick="startAR()">Activar</button>
   </div>
 
-  <div class="intro-step" id="step3">
-    <h1>💚 Imagina este momento</h1>
-    <p>Esta noche miras a tu familia y dices:<br><br>“He decidido salvar vidas.”</p>
-    <button onclick="startPermission()">Ver cómo</button>
+  <!-- MENSAJE -->
+  <div id="arMessage">
+    <div id="arMessageContent"></div>
   </div>
 
-</div>
+  <audio id="sound-heart" src="sounds/heartbeat.mp3" preload="auto" loop></audio>
+  <audio id="sound-lung" src="sounds/lung.mp3" preload="auto" loop></audio>
+  <audio id="sound-eye" src="sounds/eye.mp3" preload="auto" loop></audio>
+  <audio id="sound-liver" src="sounds/liver.mp3" preload="auto" loop></audio>
+  <audio id="sound-kidney" src="sounds/kidney.mp3" preload="auto" loop></audio>
 
-<!-- PERMISSION -->
-<div id="permissionScreen">
-  <h2>Activar cámara</h2>
-  <button onclick="startAR()">Activar</button>
-</div>
+  <!-- AR -->
+  <a-scene mindar-image="imageTargetSrc: targets.mind; filterMinCF:0.001; filterBeta:0.01" color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights; alpha: true" vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false" id="scene">
 
-<!-- MENSAJE -->
-<div id="arMessage">
-  <div id="arMessageContent"></div>
-</div>
+    <a-light type="ambient" intensity="1.2"></a-light>
+    <a-light type="directional" position="0 1 1" intensity="1"></a-light>
 
-<!-- AR -->
-<a-scene
-  mindar-image="imageTargetSrc: targets.mind;"
-  color-space="sRGB"
-  renderer="colorManagement: true, physicallyCorrectLights"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  id="scene"
->
+    <a-assets>
+      <a-asset-item id="heartModel" src="models/heart.glb"></a-asset-item>
+      <a-asset-item id="lungModel" src="models/lung.glb"></a-asset-item>
+      <a-asset-item id="eyeModel" src="models/eye.glb"></a-asset-item>
+      <a-asset-item id="liverModel" src="models/liver.glb"></a-asset-item>
+      <a-asset-item id="kidneyModel" src="models/kidney.glb"></a-asset-item>
+    </a-assets>
 
-  <a-assets>
-    <a-asset-item id="heartModel" src="models/heart.glb"></a-asset-item>
-    <a-asset-item id="lungModel" src="models/lung.glb"></a-asset-item>
-    <a-asset-item id="eyeModel" src="models/eye.glb"></a-asset-item>
-    <a-asset-item id="liverModel" src="models/liver.glb"></a-asset-item>
-    <a-asset-item id="kidneyModel" src="models/kidney.glb"></a-asset-item>
-  </a-assets>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-  <!-- CORAZON -->
-  <a-entity mindar-image-target="targetIndex: 4">
+    <!-- CORAZON -->
+    <!-- <a-entity mindar-image-target="targetIndex: 4">
     <a-gltf-model 
       src="#heartModel"
       position="0 0 0"
       rotation="0 0 0"
       scale="0.6 0.6 0.6">
     </a-gltf-model>
-  </a-entity>
-  <!-- PULMÓN -->
-  <a-entity mindar-image-target="targetIndex: 2">
+  </a-entity> -->
+    <!-- PULMÓN -->
+    <!-- <a-entity mindar-image-target="targetIndex: 2">
     <a-entity scale="2.5 2.5 2.5">
       <a-gltf-model src="#lungModel"></a-gltf-model>
     </a-entity>
-  </a-entity>
-  <!-- OJO -->
-  <a-entity mindar-image-target="targetIndex: 3">
+  </a-entity> -->
+    <!-- OJO -->
+    <!-- <a-entity mindar-image-target="targetIndex: 3">
     <a-gltf-model 
       src="#eyeModel"
       position="0 0 0"
       rotation="0 0 0"
       scale="0.2 0.2 0.2">
     </a-gltf-model>
-  </a-entity>
-  <!-- HIGADO -->
-  <a-entity mindar-image-target="targetIndex: 0">
+  </a-entity> -->
+    <!-- HIGADO -->
+    <!-- <a-entity mindar-image-target="targetIndex: 0">
     <a-entity scale="2.8 2.8 2.8">
       <a-gltf-model src="#liverModel"></a-gltf-model>
     </a-entity>
-  </a-entity>
-  <!-- RIÑON -->
-  <a-entity mindar-image-target="targetIndex: 1">
+  </a-entity> -->
+    <!-- RIÑON -->
+    <!-- <a-entity mindar-image-target="targetIndex: 1">
     <a-entity scale="1.5 1.5 1.5">
       <a-gltf-model src="#kidneyModel"></a-gltf-model>
     </a-entity>
-  </a-entity>
+  </a-entity> -->
 
-</a-scene>
+    <!-- CORAZON -->
+    <a-entity mindar-image-target="targetIndex: 4">
+      <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear"
+        animation__float="property: position; dir: alternate; dur: 2000; loop: true; to: 0 0.05 0">
 
-<script>
+        <a-gltf-model src="#heartModel" scale="0.6 0.6 0.6"
+          animation__beat="property: scale; dir: alternate; dur: 600; loop: true; to: 0.65 0.65 0.65">
+        </a-gltf-model>
+      </a-entity>
+    </a-entity>
 
-const prejuicios = [
-  "“Me da miedo.”",
-  "“Eso trae mala suerte.”",
-  "“Prefiero no pensarlo.”"
-];
+    <!-- PULMON -->
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-entity scale="3 3 3" position="0 0.5 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"
+        animation__float="property: position; dir: alternate; dur: 2500; loop: true; to: 0 0.05 0">
 
-let i = 0;
-setInterval(() => {
-  document.getElementById("rotatingText").innerText = prejuicios[i];
-  i = (i+1)%prejuicios.length;
-}, 2000);
+        <a-gltf-model src="#lungModel"></a-gltf-model>
+      </a-entity>
+    </a-entity>
 
-function nextStep(n){
-  document.querySelectorAll(".intro-step").forEach(s => s.classList.remove("active"));
-  document.getElementById("step"+n).classList.add("active");
-}
+    <!-- OJO -->
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-entity animation="property: rotation; to: 180 360 0; loop: true; dur: 12000; easing: linear"
+        animation__float="property: position; dir: alternate; dur: 2000; loop: true; to: 0 0.05 0">
 
-function startPermission(){
-  document.getElementById("introFlow").style.display = "none";
-  document.getElementById("permissionScreen").style.display = "flex";
-}
+        <a-gltf-model src="#eyeModel" scale="0.2 0.2 0.2">
+        </a-gltf-model>
+      </a-entity>
+    </a-entity>
 
-// function startAR(){
-//   document.getElementById("permissionScreen").style.display = "none";
+    <!-- HIGADO -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-entity scale="3.8 3.8 3.8" animation="property: rotation; to: 90 360 0; loop: true; dur: 22000; easing: linear"
+        animation__float="property: position; dir: alternate; dur: 2500; loop: true; to: 0 0.05 0">
 
-//   const scene = document.querySelector("a-scene");
-//   scene.style.display = "block";
+        <a-gltf-model src="#liverModel"></a-gltf-model>
+      </a-entity>
+    </a-entity>
 
-//   scene.addEventListener("loaded", () => {
-//     const mindarComponent = scene.components["mindar-image"];
-//     mindarComponent.start();
-//   });
-// }
+    <!-- RIÑON -->
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-entity scale="0.8 0.8 0.8" animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear"
+        animation__float="property: position; dir: alternate; dur: 2500; loop: true; to: 0 0.05 0">
+        <a-gltf-model src="#kidneyModel"></a-gltf-model>
+      </a-entity>
+    </a-entity>
+  </a-scene>
 
-function startAR(){
-  document.getElementById("permissionScreen").style.display = "none";
-  const scene = document.querySelector("a-scene");
-  scene.style.display = "block";
-}
+  <div id="storyOverlay">
+    <h2 id="storyTitle"></h2>
+    <p id="storyText"></p>
 
-const mensajes = {
-  0: { titulo: "Puede volver a latir", texto: "Y cuando vuelve a latir, alguien vuelve a abrazar." },
-  1: { titulo: "Puede volver a respirar", texto: "Y cuando alguien respira, una familia deja de contener el aire." },
-  2: { titulo: "Puede volver a ver", texto: "Y cuando alguien vuelve a ver, el mundo vuelve a empezar." },
-  3: { titulo: "Puede volver a empezar", texto: "Cuando el hígado funciona, la vida continúa." },
-  4: { titulo: "Puede devolver independencia", texto: "Cuando alguien deja la diálisis, recupera su tiempo." }
-};
+    <button class="btn-cta" id="ctaButton">
+      Conocer una historia real
+    </button>
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("[mindar-image-target]").forEach((target, index) => {
-    target.addEventListener("targetFound", () => {
-      const data = mensajes[index];
-      const box = document.getElementById("arMessageContent");
-      box.innerHTML = `
-        <h2>${data.titulo}</h2>
-        <p>${data.texto}</p>
-        <button onclick="window.location.href='experiencia.html'">
-          Conoce una historia real
-        </button>
-      `;
-      document.getElementById("arMessage").style.display = "flex";
+    <button class="btn-cta btn-secondary" id="closeStory">
+      Cerrar
+    </button>
+  </div>
+
+  <script>
+
+    const prejuicios = [
+      "“Me da miedo.”",
+      "“Eso trae mala suerte.”",
+      "“Prefiero no pensarlo.”"
+    ];
+
+    let i = 0;
+    setInterval(() => {
+      document.getElementById("rotatingText").innerText = prejuicios[i];
+      i = (i + 1) % prejuicios.length;
+    }, 2000);
+
+    function nextStep(n) {
+      document.querySelectorAll(".intro-step").forEach(s => s.classList.remove("active"));
+      document.getElementById("step" + n).classList.add("active");
+    }
+
+    function startPermission() {
+      document.getElementById("introFlow").style.display = "none";
+      document.getElementById("permissionScreen").style.display = "flex";
+    }
+
+    // function startAR(){
+    //   document.getElementById("permissionScreen").style.display = "none";
+
+    //   const scene = document.querySelector("a-scene");
+    //   scene.style.display = "block";
+
+    //   scene.addEventListener("loaded", () => {
+    //     const mindarComponent = scene.components["mindar-image"];
+    //     mindarComponent.start();
+    //   });
+    // }
+
+    function startAR() {
+      document.getElementById("permissionScreen").style.display = "none";
+      const scene = document.querySelector("a-scene");
+      scene.style.display = "block";
+
+      unlockAudio();
+    }
+
+    const mensajes = {
+      0: { titulo: "Puede volver a latir", texto: "Y cuando vuelve a latir, alguien vuelve a abrazar." },
+      1: { titulo: "Puede volver a respirar", texto: "Y cuando alguien respira, una familia deja de contener el aire." },
+      2: { titulo: "Puede volver a ver", texto: "Y cuando alguien vuelve a ver, el mundo vuelve a empezar." },
+      3: { titulo: "Puede volver a empezar", texto: "Cuando el hígado funciona, la vida continúa." },
+      4: { titulo: "Puede devolver independencia", texto: "Cuando alguien deja la diálisis, recupera su tiempo." }
+    };
+
+    // document.addEventListener("DOMContentLoaded", () => {
+    //   document.querySelectorAll("[mindar-image-target]").forEach((target, index) => {
+    //     target.addEventListener("targetFound", () => {
+    //       const data = mensajes[index];
+    //       const box = document.getElementById("arMessageContent");
+    //       box.innerHTML = `
+    //         <h2>${data.titulo}</h2>
+    //         <p>${data.texto}</p>
+    //         <button onclick="window.location.href='experiencia.html'">
+    //           Conoce una historia real
+    //         </button>
+    //       `;
+    //       document.getElementById("arMessage").style.display = "flex";
+    //     });
+
+    //     target.addEventListener("targetLost", () => {
+    //       document.getElementById("arMessage").style.display = "none";
+    //     });
+    //   });
+    // });
+
+    // const mensajes = {
+    //   0:{titulo:"Puede volver a latir",texto:"Y cuando vuelve a latir, alguien vuelve a abrazar."},
+    //   1:{titulo:"Puede devolver independencia",texto:"Cuando alguien deja la diálisis, recupera su tiempo."},
+    //   2:{titulo:"Puede volver a respirar",texto:"Y cuando alguien respira, una familia vuelve a vivir."},
+    //   3:{titulo:"Puede volver a ver",texto:"Y cuando alguien vuelve a ver, el mundo vuelve a empezar."},
+    //   4:{titulo:"Puede volver a empezar",texto:"Cuando el hígado funciona, la vida continúa."}
+    // }
+
+    const sounds = {
+      heart: document.getElementById("sound-heart"),
+      lung: document.getElementById("sound-lung"),
+      eye: document.getElementById("sound-eye"),
+      liver: document.getElementById("sound-liver"),
+      kidney: document.getElementById("sound-kidney")
+    };
+
+    console.log(sounds.heart)
+
+    function unlockAudio(){
+      Object.values(sounds).forEach(sound=>{
+        sound.volume = 0
+        sound.play()
+          .then(()=>{
+            sound.pause()
+            sound.currentTime = 0
+            sound.volume = 1
+          })
+          .catch(()=>{})
+      })
+    }
+
+    function stopAllSounds() {
+      Object.values(sounds).forEach(sound => {
+        sound.pause();
+        sound.currentTime = 0;
+      });
+    }
+
+    document.querySelectorAll("[mindar-image-target]").forEach((target, index) => {
+      target.addEventListener("targetFound", () => {
+        const data = mensajes[index]
+        document.getElementById("storyTitle").innerText = data.titulo
+        document.getElementById("storyText").innerText = data.texto
+        document.getElementById("storyOverlay").classList.add("show")
+
+        // detener cualquier sonido previo
+        stopAllSounds()
+        
+        // reproducir sonido según órgano
+        switch(index){
+          case 0: sounds.heart.play().catch(()=>{}); break;    // corazón
+          case 1: sounds.lung.play().catch(()=>{}); break;    // pulmon
+          case 2: sounds.eye.play().catch(()=>{}); break;     // ojo
+          case 3: sounds.liver.play().catch(()=>{}); break;   // higado
+          case 4: sounds.kidney.play().catch(()=>{}); break;  // riñon
+        }
+      })
+
+      target.addEventListener("targetLost", () => {
+        document.getElementById("storyOverlay").classList.remove("show")
+        stopAllSounds()
+      })
+    })
+
+    document.getElementById("closeStory").onclick = () => {
+      document.getElementById("storyOverlay").classList.remove("show")
+    }    
+
+    function playSound(sound) {
+      stopAllSounds();
+      sound.play().catch(() => { });
+    }
+    
+    document.querySelectorAll("a-marker").forEach(marker=>{
+      marker.addEventListener("markerLost",()=>{
+        stopAllSounds();
+      });
     });
-
-    target.addEventListener("targetLost", () => {
-      document.getElementById("arMessage").style.display = "none";
-    });
-  });
-});
-
-</script>
-
+    
+  </script>
 </body>
+
 </html>
