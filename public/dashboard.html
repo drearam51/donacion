@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Explora más</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#141e30,#243b55);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  max-width:500px;
+  width:90%;
+  text-align:center;
+}
+
+h1{
+  margin-bottom:30px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.card{
+  background:white;
+  color:#2c3e50;
+  padding:25px;
+  border-radius:16px;
+  cursor:pointer;
+  transition:all .3s;
+  box-shadow:0 8px 20px rgba(0,0,0,.3);
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.icon{
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+.title{
+  font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Explora más</h1>
+
+<div class="grid">
+
+<div class="card" onclick="window.location.href='experiencia.html'">
+<div class="icon">💭</div>
+<div class="title">Conoce un sueño</div>
+</div>
+
+<div class="card" onclick="window.location.href='informacion.html'">
+<div class="icon">❤️</div>
+<div class="title">Quiero saber más</div>
+</div>
+
+<div class="card" onclick="window.location.href='estadisticas.html'">
+<div class="icon">📊</div>
+<div class="title">Estadísticas</div>
+</div>
+
+<div class="card" onclick="window.location.href='mindar.html'">
+<div class="icon">📷</div>
+<div class="title">Volver a la experiencia</div>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

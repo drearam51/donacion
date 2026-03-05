@@ -301,8 +301,8 @@
     <h2 id="storyTitle"></h2>
     <p id="storyText"></p>
 
-    <button class="btn-cta" id="ctaButton">
-      Conocer una historia real
+    <button class="btn-cta" id="ctaButton" onclick="window.location.href='dashboard.html'">
+      Quiero informarme 
     </button>
 
     <button class="btn-cta btn-secondary" id="closeStory">
@@ -461,6 +461,10 @@
         stopAllSounds();
       });
     });
+
+    document.getElementById("ctaButton").onclick = () => {
+      window.location.href = "dashboard.html";
+    }
     
   </script>
 </body>

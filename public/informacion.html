@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quiero informarme</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 30px;
+            opacity: .9;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-neutral {
+            background: #7f8c8d;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Donación de órganos</h1>
+
+        <p>
+            Una sola persona puede salvar hasta <b>8 vidas</b> mediante la donación de órganos.
+            ¿Qué te gustaría hacer?
+        </p>
+
+        <button class="button btn-primary" onclick="mostrarFormulario()">
+            Quiero informarme
+        </button>
+
+        <button class="button btn-secondary" onclick="registrarDecision('consultar_familia')">
+            Quiero consultarlo con mi familia
+        </button>
+
+        <button class="button btn-neutral" onclick="registrarDecision('tal_vez_despues')">
+            Tal vez después
+        </button>
+
+    </div>
+    <div id="registroContainer" style="display:none; margin-top:30px;">
+
+        <h2>Registro</h2>
+
+        <form id="registroForm">
+
+            <input id="nombre" type="text" placeholder="Nombre completo" required
+                style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:none;">
+
+            <input id="email" type="email" placeholder="Correo electrónico" required
+                style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:none;">
+
+            <label style="display:block; margin-top:10px;">
+                <input type="checkbox" id="consentimiento" required>
+                Acepto el tratamiento de datos personales
+            </label>
+
+            <button type="submit" class="button btn-primary" style="margin-top:20px;">
+                Registrarme
+            </button>
+
+        </form>
+
+        <div id="mensaje"></div>
+
+    </div>
+
+    <script>
+
+        async function registrarDecision(decision) {
+
+            try {
+
+                const data = {
+                    decision: decision,
+                    timestamp: new Date(),
+                    userAgent: navigator.userAgent
+                }
+
+                await fetch('/api/interaction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+
+                alert("Gracias por tu decisión ❤️")
+
+            } catch (e) {
+                console.error(e)
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const historiaId = params.get("id");
+
+            const payload = {
+                historia_id: historiaId,
+                decision: tipoDecision,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await fetch('/api/decision', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const container = document.getElementById("decisionContainer");
+
+                if (tipoDecision === "registrarme") {
+
+                    container.innerHTML = `
+        <h3>Gracias por dar un paso que puede salvar vidas.</h3>
+        <p>Te llevaremos al registro...</p>
+        `;
+
+                    setTimeout(() => {
+                        window.location.href = "registro.html";
+                    }, 1500);
+
+                } else if (tipoDecision === "familia") {
+
+                    container.innerHTML = `
+        <h3>Hablarlo es un acto de responsabilidad.</h3>
+        <p>Las decisiones importantes se toman en familia.</p>
+        `;
+
+                } else {
+
+                    container.innerHTML = `
+        <h3>Reflexionar también es un paso.</h3>
+        <p>Cuando estés listo, la decisión puede salvar vidas.</p>
+        `;
+                }
+
+            } catch (error) {
+                console.error("Error guardando decisión:", error);
+            }
+        }
+
+        function mostrarFormulario() {
+            document.getElementById("registroContainer").style.display = "block";
+        }
+
+        const form = document.getElementById("registroForm");
+        const mensaje = document.getElementById("mensaje");
+
+        form.addEventListener("submit", async (e) => {
+
+            e.preventDefault();
+
+            const nombre = document.getElementById("nombre").value;
+            const email = document.getElementById("email").value;
+            const consentimiento = document.getElementById("consentimiento").checked;
+
+            try {
+
+                const response = await fetch("/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        nombre,
+                        email,
+                        consentimiento
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+
+                    mensaje.innerHTML = `
+        <p style="color:#2ecc71; margin-top:20px;">
+        ❤️ Gracias por registrarte.  
+        Tu decisión puede cambiar vidas.
+        </p>
+      `;
+
+                    form.reset();
+
+                } else {
+
+                    mensaje.innerHTML = `
+        <p style="color:#e74c3c;">
+        ${data.error}
+        </p>
+      `;
+
+                }
+
+            } catch (error) {
+
+                mensaje.innerHTML = `
+      <p style="color:#e74c3c;">
+      Error de conexión con el servidor.
+      </p>
+    `;
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

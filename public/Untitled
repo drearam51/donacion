@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quiero informarme</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#141e30,#243b55);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  max-width:500px;
+  width:90%;
+  text-align:center;
+}
+
+h1{
+  margin-bottom:10px;
+}
+
+p{
+  margin-bottom:30px;
+  opacity:.9;
+}
+
+.button{
+  display:block;
+  width:100%;
+  padding:18px;
+  margin:10px 0;
+  border:none;
+  border-radius:30px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.btn-primary{
+  background:#e74c3c;
+  color:white;
+}
+
+.btn-secondary{
+  background:#3498db;
+  color:white;
+}
+
+.btn-neutral{
+  background:#7f8c8d;
+  color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Donación de órganos</h1>
+
+<p>
+Una sola persona puede salvar hasta <b>8 vidas</b> mediante la donación de órganos.
+¿Qué te gustaría hacer?
+</p>
+
+<button class="button btn-primary" onclick="registrarDecision('registrarse')">
+Quiero registrarme como donante
+</button>
+
+<button class="button btn-secondary" onclick="registrarDecision('consultar_familia')">
+Quiero consultarlo con mi familia
+</button>
+
+<button class="button btn-neutral" onclick="registrarDecision('tal_vez_despues')">
+Tal vez después
+</button>
+
+</div>
+
+<script>
+
+async function registrarDecision(decision){
+
+  try{
+
+    const data = {
+      decision: decision,
+      timestamp: new Date(),
+      userAgent: navigator.userAgent
+    }
+
+    await fetch('/api/interaction',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(data)
+    })
+
+    alert("Gracias por tu decisión ❤️")
+
+  }catch(e){
+    console.error(e)
+  }
+
+}
+
+</script>
+
+</body>
+</html>

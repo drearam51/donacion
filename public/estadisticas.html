@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Estadísticas</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#141e30,#243b55);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  width:90%;
+  max-width:800px;
+  text-align:center;
+}
+
+h1{
+  margin-bottom:30px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+
+.card{
+  background:white;
+  color:#2c3e50;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.number{
+  font-size:40px;
+  font-weight:bold;
+  color:#e74c3c;
+}
+
+label{
+  font-size:14px;
+}
+
+button{
+  margin-top:30px;
+  padding:14px 28px;
+  border:none;
+  border-radius:30px;
+  background:#e74c3c;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Impacto de la experiencia</h1>
+
+<div class="grid">
+
+<div class="card">
+<div class="number" id="escaneos">0</div>
+<label>Personas que escanearon</label>
+</div>
+
+<div class="card">
+<div class="number" id="interesados">0</div>
+<label>Quieren saber más</label>
+</div>
+
+<!-- <div class="card">
+<div class="number" id="donantes">0</div>
+<label>Quieren registrarse</label>
+</div> -->
+
+<div class="card">
+<div class="number" id="vidas">0</div>
+<label>Vidas que podrían salvarse</label>
+</div>
+
+</div>
+
+<button onclick="window.location.href='mindar.html'">
+Volver a la experiencia
+</button>
+
+</div>
+
+<script>
+
+async function cargarEstadisticas(){
+
+  const res = await fetch('/api/stats')
+  const data = await res.json()
+
+  console.log("data", data)
+
+  document.getElementById("escaneos").innerText = data.stats.totalInteractions
+  document.getElementById("interesados").innerText = data.stats.totalRegistrations
+  document.getElementById("donantes").innerText = data.stats.registrarse
+  document.getElementById("vidas").innerText = data.stats.totalRegistrations * 8
+
+}
+
+cargarEstadisticas()
+
+</script>
+
+</body>
+</html>

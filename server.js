@@ -104,6 +104,7 @@ app.post('/api/interaction', async (req, res) => {
     const userAgent = req.headers['user-agent'];
 
     const interaction = new Interaction({
+      tipo: "ar_scan",   // 👈 obligatorio
       organ,
       device,
       userAgent,
@@ -210,6 +211,7 @@ app.post('/api/decision', async (req, res) => {
     }
 
     const interaction = new Interaction({
+      tipo: "decision",   // 👈 obligatorio
       historia_id,
       decision,
       timestamp,
@@ -288,6 +290,7 @@ app.post('/api/decision', async (req, res) => {
     }
 
     const interaction = new Interaction({
+      tipo: "decision",   // 👈 obligatorio
       historia_id,
       decision,
       timestamp,
